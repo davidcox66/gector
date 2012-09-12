@@ -1,0 +1,47 @@
+<configuration>
+
+ <jmxConfigurator />
+
+ <!-- ERROR, INFO, DEBUG, WARN -->
+  <appender name="CONSOLE"
+    class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern># [%d{HH:mm:ss.SSS}] [%-5level] [%lo{1}] [%method] [%msg]%n
+      </Pattern>
+    </layout>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <File>target/testDebugLog.txt</File>
+    <Append>false</Append>
+    <BufferedIO>false</BufferedIO>
+    <ImmediateFlush>true</ImmediateFlush>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>[%d{HH:mm:ss.SSS}] [%-5level] [%lo{1}] [%method] [%msg]%n</Pattern>
+    </layout>
+  </appender>
+
+  <logger name="org.springframework">
+    <level value="INFO" />
+  </logger>
+
+  <logger name="me.prettyprint">
+    <level value="INFO" />
+  </logger>
+  
+  <logger name="org.apache.cassandra">
+    <level value="WARN" />
+  </logger>
+  
+  <logger name="org.gector">
+    <level value="DEBUG" />
+  </logger>
+  
+  <root>
+    <level value="INFO" />
+    <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
+  </root>
+
+</configuration>
+

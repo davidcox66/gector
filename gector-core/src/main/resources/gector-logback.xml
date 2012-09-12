@@ -1,0 +1,44 @@
+<configuration>
+
+ <jmxConfigurator />
+
+ <!-- ERROR, INFO, DEBUG, WARN -->
+  <appender name="CONSOLE"
+    class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern># [%d{HH:mm:ss.SSS}] [%-5level] [%lo{1}] [%msg]%n
+      </Pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.springframework">
+    <level value="${fine.level:-INFO}" />
+  </logger>
+
+  <logger name="me.prettyprint">
+    <level value="${root.level:-INFO}" />
+  </logger>
+  
+  <logger name="org.apache.cassandra">
+    <level value="WARN" />
+  </logger>
+  
+  <logger name="org.gector">
+    <level value="${root.level:-DEBUG}" />
+  </logger>
+  
+  <logger name="org.gector.db.GHelper">
+    <level value="${root.level:-DEBUG}" />
+  </logger>
+  
+  <logger name="org.gector.db.GColumnFamily">
+    <level value="${root.level:-DEBUG}" />
+  </logger>
+  
+  <root>
+    <level value="${root.level:-INFO}" />
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+</configuration>
+

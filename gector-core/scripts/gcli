@@ -1,0 +1,12 @@
+#!/bin/bash
+
+curr=$PWD
+cd $(dirname $0)/..
+root=$PWD
+cd $curr
+
+export CLASSPATH=
+export CLASSPATH=$CLASSPATH:$root/target/gector-1.0.0-SNAPSHOT-standalone-distro.jar
+
+JAVA_OPTS="-Dlogback.configurationFile=gector-logback.xml"
+java $JAVA_OPTS org.gector.cli.GCli "$@"

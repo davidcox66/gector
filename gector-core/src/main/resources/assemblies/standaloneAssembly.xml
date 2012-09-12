@@ -1,0 +1,66 @@
+<assembly>
+  <id>standalone-distro</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+	<dependencySets>
+		<dependencySet>
+			<includes>
+				<include>${project.groupId}:${project.artifactId}</include>
+			</includes>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+      	<excludes>
+      		<exclude>scripts/*</exclude>
+      	</excludes>
+      </unpackOptions>
+    </dependencySet>
+    
+		<dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+      	<excludes>
+      		<exclude>*logback.xml</exclude>
+      	</excludes>
+      </unpackOptions>
+    </dependencySet>
+
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+      	<excludes>
+      		<exclude>*logback.xml</exclude>
+      	</excludes>
+      </unpackOptions>
+      <scope>provided</scope>
+    </dependencySet>	
+   
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+      	<excludes>
+      		<exclude>*logback.xml</exclude>
+      	</excludes>
+      </unpackOptions>
+      <scope>compile</scope>
+    </dependencySet>	
+
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+      	<excludes>
+      		<exclude>*logback.xml</exclude>
+      	</excludes>
+      </unpackOptions>
+      <scope>test</scope>
+    </dependencySet>	
+  </dependencySets>
+  
+</assembly>

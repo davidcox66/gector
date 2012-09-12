@@ -1,0 +1,11 @@
+target/
+work/
+*~
+*.swp
+.classpath
+.project
+.DS_Store
+.package
+.settings/
+bin/
+.~lock*
