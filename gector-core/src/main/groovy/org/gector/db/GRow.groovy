@@ -69,18 +69,13 @@ class GRow
   }
 
   public String getKeyAsString() {
-	  if( key != null ) {
-		  if( key instanceof String ) {
-			  return key;
-		  }
-		  else if( key instanceof ByteBuffer ) {
-			  return StringSerializer.get().fromByteBuffer( key );
-		  }
-		  else {
-			  return String.valueOf( key );
-		  }
-	  }
+	  return GHelper.asString( key );
   }
+  
+  public String getKeyAsString( Serializer ser ) {
+	  return GHelper.asString( key, ser );
+  }
+  
   /**
    * Deletes this row from the database
    */

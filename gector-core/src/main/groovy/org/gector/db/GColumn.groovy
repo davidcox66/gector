@@ -93,7 +93,15 @@ class GColumn
     if( LOGGER.isDebugEnabled() ) { LOGGER.debug( "deleteSuper: ${fullyQualifiedLocation}" ); }
 	  return updater.superDelete(key, columnFamilyName, columnName, serializer );
   }
- 
+
+  public String getNameAsString() {
+	  return GHelper.asString( columnName );
+  }
+  
+  public String getNameAsString( Serializer ser ) {
+	  return GHelper.asString( columnName, ser );
+  }
+
   /*
    * Various getAt() methods to allow associate-array notation for access to sub-columns. 
    */

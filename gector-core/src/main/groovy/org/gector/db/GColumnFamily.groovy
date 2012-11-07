@@ -59,9 +59,6 @@ class GColumnFamily
    */
   private def queriedRows;
   
-  private static final ByteBuffer EMPTY = ByteBuffer.allocate(0);
-  private static final int QUERY_CHUNK = 100;
-   
   /**
    * Creates the named column family in the given keyspace
    *  
@@ -290,8 +287,15 @@ class GColumnFamily
     return slice;
   }
 
-  GScanIterable queryAll( Closure queryModifier, Closure closure ) {
-	  GScanIterable ret = new GScanIterable( this, true, queryModifier );
+  GScanIterable queryAll( Class keyClass, Object start, Object finish, boolean reversed, int count, Closure closure ) {
+	 return queryAll( keyClass, { setRange(start,finish,reversed,count)}, closure ) ;
+  }
+  GScanIterable queryAll( Class keyClass, Collection columnNames, Closure closure ) {
+	 return queryAll( keyClass, { setColumnNames(columnNames)}, closure ) ;
+  }
+  
+  GScanIterable queryAll( Class keyClass, Closure queryModifier, Closure closure ) {
+	  GScanIterable ret = new GScanIterable( this, keyClass, true, queryModifier );
 	  if( closure != null ) {
 		  GScanIterator iter = ret.iterator();
 		  while( iter.hasNext() ) {
@@ -301,8 +305,15 @@ class GColumnFamily
 	  return ret;
   }
   
-  GScanIterable queryAllSuper( Closure queryModifier, Closure closure ) {
-	  GScanIterable ret = new GScanIterable( this, false, queryModifier );
+  GScanIterable queryAllSuper( Class keyClass, Object start, Object finish, boolean reversed, int count, Closure closure ) {
+	 return queryAllSuper( keyClass, { setRange(start,finish,reversed,count)}, closure ) ;
+  }
+  GScanIterable queryAllSuper( Class keyClass, Collection columnNames, Closure closure ) {
+	 return queryAllSuper( keyClass, { setColumnNames(columnNames)}, closure ) ;
+  }
+  
+  GScanIterable queryAllSuper( Class keyClass, Closure queryModifier, Closure closure ) {
+	  GScanIterable ret = new GScanIterable( this, keyClass, false, queryModifier );
 	  if( closure != null ) {
 		  GScanIterator iter = ret.iterator();
 		  while( iter.hasNext() ) {

@@ -1,28 +1,26 @@
 package org.gector.db;
 
-import me.prettyprint.cassandra.serializers.ByteBufferSerializer
-import me.prettyprint.hector.api.Keyspace
-import me.prettyprint.hector.api.beans.OrderedRows
-import me.prettyprint.hector.api.beans.Row
-import me.prettyprint.hector.api.factory.HFactory
-import me.prettyprint.hector.api.query.QueryResult
-import me.prettyprint.hector.api.query.RangeSlicesQuery
+import me.prettyprint.hector.api.Serializer
 
 public class GScanIterable implements Iterable<GRow> {
 	
   private GColumnFamily columnFamily;
+  private Serializer keySerializer;
   private boolean standard;
   private Closure queryModifier;
    
-  public GScanIterable(GColumnFamily columnFamily,boolean standard, Closure queryModifier ) {
+  public GScanIterable(GColumnFamily columnFamily, Class keyClass, boolean standard, Closure queryModifier ) {
 	  this.columnFamily = columnFamily;
+	  this.keySerializer = GHelper.getSerializerEx( keyClass );
 	  this.standard = standard;
 	  this.queryModifier = queryModifier;
   }
 
   @Override
   public Iterator<GRow> iterator() {
-    return standard ? new GStandardScanIterator(columnFamily,queryModifier) : new GSuperScanIterator(columnFamily,queryModifier);
+    return standard ? 
+		new GStandardScanIterator(columnFamily,keySerializer, queryModifier) : 
+		new GSuperScanIterator(columnFamily,keySerializer, queryModifier);
   }
 }
 

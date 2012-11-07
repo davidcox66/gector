@@ -108,6 +108,14 @@ class GHelper
     return null;
   }
   
+  static Serializer getSerializerEx( Object obj ) {
+	  Serializer ret = getSerializer( obj );  
+	  if( ret == null ) {
+		  throw new RuntimeException( "No serializer for " + obj );
+	  }
+	  return ret;
+  }
+  
   /**
    * Converts any object into a ByteBuffer, accounting for a bug in Hector that does not
    * return the appropriate Serializer for Double.
