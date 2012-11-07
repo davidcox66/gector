@@ -115,7 +115,7 @@ class StandardColumnFamilyTest extends BaseCassandraTest
      
     keyspace.withColumnFamily( 'TestColumnFamilyMulti' ) { GColumnFamily cf ->
       def rows = cf.query( range ) { 
-        assertNotNull( cf.multiGetRows );
+        assertNotNull( cf.queriedRows );
 	      range.each{ key ->
 	        assertEquals( "${key}", cf[key]['testCol'].getString() );
 	      }

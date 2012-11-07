@@ -1,22 +1,29 @@
-package org.gector.db
+package org.gector.db;
 
 import java.nio.ByteBuffer
 
 import me.prettyprint.cassandra.serializers.ByteBufferSerializer
+import me.prettyprint.cassandra.serializers.StringSerializer
 import me.prettyprint.hector.api.Serializer
+import me.prettyprint.hector.api.beans.OrderedRows
+import me.prettyprint.hector.api.beans.OrderedSuperRows
+import me.prettyprint.hector.api.beans.Row
+import me.prettyprint.hector.api.beans.Rows
 import me.prettyprint.hector.api.beans.SuperRow
+import me.prettyprint.hector.api.beans.SuperRows
 import me.prettyprint.hector.api.factory.HFactory
 import me.prettyprint.hector.api.query.MultigetSliceQuery
 import me.prettyprint.hector.api.query.MultigetSubSliceQuery
 import me.prettyprint.hector.api.query.MultigetSuperSliceQuery
 import me.prettyprint.hector.api.query.Query
 import me.prettyprint.hector.api.query.QueryResult
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import me.prettyprint.hector.api.query.RangeSlicesQuery
+import me.prettyprint.hector.api.query.RangeSuperSlicesQuery
 
 import org.gector.db.trans.GTransactionManager
 import org.gector.db.update.GUpdater
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Provides methods to allow simplified access to a column family using Groovy associative-array
@@ -50,7 +57,10 @@ class GColumnFamily
    * Holds the result of multi-get queries so that closures within the context of query()
    * will have access to the results of the multi-get transparently.
    */
-  private def multiGetRows;
+  private def queriedRows;
+  
+  private static final ByteBuffer EMPTY = ByteBuffer.allocate(0);
+  private static final int QUERY_CHUNK = 100;
    
   /**
    * Creates the named column family in the given keyspace
@@ -258,7 +268,7 @@ class GColumnFamily
    * @return
    */
   Iterable<GRow> getRows() {
-    return multiGetRows ? new GRowIterable(this,multiGetRows) : null; 
+    return queriedRows ? new GRowIterable(this,queriedRows) : null; 
   }
   
   /**
@@ -270,8 +280,8 @@ class GColumnFamily
    */
   def getMultigetSlice( Object key ) {
     def slice = null;
-    if( multiGetRows ) {
-      def row = multiGetRows.getByKey( key );
+    if( queriedRows ) {
+      def row = queriedRows.getByKey( key );
       if( row ) {
         slice = row instanceof SuperRow ? row.getSuperSlice() : row.getColumnSlice();
         if( LOGGER.isDebugEnabled() ) { LOGGER.debug( "getMultigetSlice: multi-get rows exists - key={${key}}, row=${row}"); }
@@ -279,6 +289,29 @@ class GColumnFamily
     }
     return slice;
   }
+
+  GScanIterable queryAll( Closure queryModifier, Closure closure ) {
+	  GScanIterable ret = new GScanIterable( this, true, queryModifier );
+	  if( closure != null ) {
+		  GScanIterator iter = ret.iterator();
+		  while( iter.hasNext() ) {
+			  closure.call( iter.next() );
+		  }
+	  }
+	  return ret;
+  }
+  
+  GScanIterable queryAllSuper( Closure queryModifier, Closure closure ) {
+	  GScanIterable ret = new GScanIterable( this, false, queryModifier );
+	  if( closure != null ) {
+		  GScanIterator iter = ret.iterator();
+		  while( iter.hasNext() ) {
+			  closure.call( iter.next() );
+		  }
+	  }
+	  return ret;
+  }
+
   
   /**
    * Does a multi-get query and allows you to either operate the rows returned or to 
@@ -529,8 +562,8 @@ class GColumnFamily
    * A convenience function to iterate over each row of the current multi-get query
    * @param closure
    */
-  void eachMultigetRow( Closure closure ) {
-    Iterable iterable = new GRowIterable(this, multiGetRows );
+  void eachQueriedRow( Closure closure ) {
+    Iterable iterable = new GRowIterable(this, queriedRows );
     for( GRow row : iterable ) {
       closure.call( row );  
     }
@@ -559,12 +592,12 @@ class GColumnFamily
     QueryResult result = query.execute();
     def ret = result.get();
     if( closure ) {
-	    multiGetRows = ret;
+	    queriedRows = ret;
 	    try {
 	      closure.call( this );
 	    }
 	    finally {
-	      multiGetRows = null;
+	      queriedRows = null;
 	    }
     }
     return new GRowIterable(this,ret);

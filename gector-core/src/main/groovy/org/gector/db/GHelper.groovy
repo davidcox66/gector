@@ -6,16 +6,16 @@ import java.nio.ByteBuffer
 
 import me.prettyprint.cassandra.serializers.DoubleSerializer
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer
+import me.prettyprint.cassandra.serializers.StringSerializer
 import me.prettyprint.hector.api.Serializer
 import me.prettyprint.hector.api.beans.ColumnSlice
 import me.prettyprint.hector.api.beans.HColumn
 import me.prettyprint.hector.api.beans.HSuperColumn
 import me.prettyprint.hector.api.beans.SuperSlice
 
+import org.gector.db.meta.GMetadataManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import org.gector.db.meta.GMetadataManager
 
 /**
  * Centralizes a few low-level operations so that we may have better control over the functionality
@@ -333,6 +333,25 @@ class GHelper
     }
     return ret;
   }
+ 
+  static Object asString( Object obj ) {
+	  return asString( obj, StringSerializer.get() );
+  } 
+  
+  static Object asString( Object obj, Serializer serializer ) {
+  	if( obj != null ) {
+		  if( obj instanceof String ) {
+			  return obj;
+		  }
+		  else if( obj instanceof ByteBuffer ) {
+			 return fromByteBuffer( obj, serializer );
+		  }
+		  else {
+			  return String.valueOf( obj );
+		  }
+	  }
+	  return null;
+  } 
   
   private static Class getClassOfRange( Object start, Object end ) {
     Class cls = null;

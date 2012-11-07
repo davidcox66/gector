@@ -3,6 +3,7 @@ package org.gector.db
 import java.nio.ByteBuffer
 
 import me.prettyprint.cassandra.serializers.ByteBufferSerializer
+import me.prettyprint.cassandra.serializers.StringSerializer
 import me.prettyprint.hector.api.Serializer
 import me.prettyprint.hector.api.beans.ColumnSlice
 import me.prettyprint.hector.api.beans.HColumn
@@ -15,10 +16,9 @@ import me.prettyprint.hector.api.query.SliceQuery
 import me.prettyprint.hector.api.query.SuperCountQuery
 import me.prettyprint.hector.api.query.SuperSliceQuery
 
+import org.gector.db.update.GUpdater
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import org.gector.db.update.GUpdater
 
 /**
  * Provides read/write access to the contents of a specified column family's row. This includes
@@ -68,6 +68,19 @@ class GRow
     this.slice = slice;
   }
 
+  public String getKeyAsString() {
+	  if( key != null ) {
+		  if( key instanceof String ) {
+			  return key;
+		  }
+		  else if( key instanceof ByteBuffer ) {
+			  return StringSerializer.get().fromByteBuffer( key );
+		  }
+		  else {
+			  return String.valueOf( key );
+		  }
+	  }
+  }
   /**
    * Deletes this row from the database
    */

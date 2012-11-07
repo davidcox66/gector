@@ -127,7 +127,7 @@ class SuperColumnFamilyTest extends BaseCassandraTest
     }
     keyspace.withColumnFamily( 'TestSuperColumnFamilyMulti' ) { GColumnFamily cf ->
       def rows = cf.querySuper( range ) {
-        assertNotNull( cf.multiGetRows );
+        assertNotNull( cf.queriedRows );
         range.each{ key ->
 	        supers.each{ String sup ->
             assertEquals( "${key}", cf[key][sup]['testCol'].getString() );

@@ -6,7 +6,10 @@ root=$PWD
 cd $curr
 
 export CLASSPATH=
-export CLASSPATH=$CLASSPATH:$root/target/gector-1.0.0-SNAPSHOT-standalone-distro.jar
+export CLASSPATH=$CLASSPATH:$root/target/gector-core-1.0-SNAPSHOT-standalone-distro.jar
 
-JAVA_OPTS="-Dlogback.configurationFile=gector-logback.xml"
+set -x
+JAVA_OPTS=
+JAVA_OPTS="$JAVA_OPTS -Xss1024k"
+JAVA_OPTS="$JAVA_OPTS -Dlogback.configurationFile=gector-logback.xml"
 java $JAVA_OPTS org.gector.cli.GCli "$@"
