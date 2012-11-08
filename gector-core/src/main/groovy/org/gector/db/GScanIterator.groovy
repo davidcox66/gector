@@ -14,7 +14,6 @@ abstract class GScanIterator implements Iterator<GRow> {
 	  
 	  private GColumnFamily columnFamily;
 	  private Iterator iterator;
-	  private boolean firstRun = true;
 	  private Object row;
 	  private Object last;
 	  private Object lastKey;
@@ -75,12 +74,10 @@ abstract class GScanIterator implements Iterator<GRow> {
 	    iterator = (rows != null) ? rows.iterator() : null;
 
 	    // we'll skip this first one, since it is the same as the last one from previous time we executed
-	    if (!firstRun  && iterator != null)  {
+	    if (lastKey  && iterator != null)  {
 	      iterator.next();
 	    }
 		
-	    firstRun = false;
-	
 	    if (!iterator.hasNext()) {
 	      row = null;    // all done.  our iterator's hasNext() will now return false;
 	    } 
